@@ -67,6 +67,28 @@ L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{
     attribution: 'Map data © Mapbox'
 }).addTo(map);
 
+
+
+function myClick(comp) {
+    geojson_comps.clearLayers();
+    var data1obj = $("#slider").dateRangeSlider("min");
+    var data2obj = $("#slider").dateRangeSlider("max");
+    var data1 = ""+data1obj.getFullYear()+"-"+(data1obj.getMonth()+1)+"-"+data1obj.getDate();
+    var data2 = ""+data2obj.getFullYear()+"-"+(data2obj.getMonth()+1)+"-"+data2obj.getDate();
+    $.getJSON('http://websys3.stern.nyu.edu/websysF16GB/websysF16GB2/mysql.php?zip='+layer.feature.properties.postalCode+'&comp='+comp+'&from='+data1+'&to='+data2,
+      function(zip_comps) {
+            var comps = L.geoJson(zip_comps, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                }
+            });
+            geojson_comps.addLayer(comps);
+        });
+    map.addLayer(geojson_comps);
+}
+
+
+
 function onLocationFound(e) {
     var radius = e.accuracy / 2;
 
@@ -123,16 +145,9 @@ function mouseClickFunction(e) {
 
         // show the zip code and borough of the clicked polygon in console log
         console.log(layer.feature.properties.postalCode + ', ' + layer.feature.properties.borough);
-        
-        $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-                var comps = L.geoJson(zip_comps, {
-                    pointToLayer: function(feature, latlng) {
-                        return L.circleMarker(latlng, geojsonMarkerOptions);
-                    }
-                });
-                geojson_comps.addLayer(comps);
-            });
-        map.addLayer(geojson_comps);
+
+        myClick("");
+
     } else {
         geojson_comps.clearLayers();
     }
@@ -149,90 +164,18 @@ $("#clearComp").click(function(){
     geojson_comps.clearLayers();
 });
 
-
 // All Complaints
-$("#allComp").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
-
+$("#allComp").click(function(){myClick("")});
 // Dirty Conditions Complaints
-$("#dirty").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&complaint_type=Dirty+Conditions&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
-
+$("#dirty").click(function(){myClick("Dirty+Conditions")});
 // Air Quality Complaints
-$("#airQual").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&complaint_type=Air+Quality&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
-
+$("#airQual").click(function(){myClick("Air+Quality")});
 // Noise Complaints
-$("#noise").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&complaint_type=Noise&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
-
+$("#noise").click(function(){myClick("Noise+-+Residential")});
 // Street Condition Complaints
-$("#street").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&complaint_type=Street+Condition&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
-
+$("#street").click(function(){myClick("Street+Condition")});
 // Rodents Complaints
-$("#rodent").click(function(){
-    geojson_comps.clearLayers();
-    $.getJSON('https://data.cityofnewyork.us/resource/fhrw-4uyv.geojson?$$app_token=TA8ytxeF7s5CL1q8wOU1dbmnL&complaint_type=Rodent&$limit=5000&incident_zip='+layer.feature.properties.postalCode, function(zip_comps) {
-            var comps = L.geoJson(zip_comps, {
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, geojsonMarkerOptions);
-                }
-            });
-            geojson_comps.addLayer(comps);
-        });
-    map.addLayer(geojson_comps);
-});
+$("#rodent").click(function(){myClick("Rodent")});
 
 function onLocationError(e) {
     alert(e.message);
